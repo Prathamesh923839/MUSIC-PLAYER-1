@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Media Player</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <link rel="icon" href="/media/logo.png" type="image/x-icon">
+
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg bg-dark sticky-top border-bottom border-body" data-bs-theme="dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">
+      <img src="/media/logo.png" alt="Logo" width="30" height="24"  class="d-inline-block align-text-top">
+      media player
+    </a>
+  </div>
+</nav>
+
+<!-- Song List -->
+<div class="container mt-4">
+  <div class="card shadow-lg">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">Songs</h4>
+    </div>
+    <ul class="list-group list-group-flush">
+      <li class="song-item list-group-item d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          <img src="/media/logo.png" class="rounded me-3" alt="Thumbnail" width="50" height="50">
+          <div>
+            <strong>THE NIGHTS</strong><br><small>avicii</small>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-outline-primary play-track" data-index="0">Play</button>
+      </li>
+      <li class="song-item list-group-item d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          <img src="/media/logo.png" class="rounded me-3" alt="Thumbnail" width="50" height="50">
+          <div>
+            <strong>MOCKINGBIRDS</strong><br><small>emenim</small>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-outline-primary play-track" data-index="1">Play</button>
+      </li>
+      <li class="song-item list-group-item d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          <img src="/media/logo.png" class="rounded me-3" alt="Thumbnail" width="50" height="50">
+          <div>
+            <strong>NARUTO</strong><br><small>theme</small>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-outline-primary play-track" data-index="2">Play</button>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-center ">*copyright of respective songs are reserved to their respective owners</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Footer Player -->
+<footer class="bg-dark text-white fixed-bottom p-2 border-top shadow-lg">
+  <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
+
+    <!-- Controls -->
+    <div class="d-flex align-items-center mb-2 mb-md-0">
+      <button id="prevBtn" class="btn btn-outline-light btn-sm me-2"><i class="bi bi-skip-backward-fill"></i></button>
+      <button id="playBtn" class="btn btn-outline-light btn-sm me-2"><i class="bi bi-play-fill"></i></button>
+      <button id="nextBtn" class="btn btn-outline-light btn-sm me-2"><i class="bi bi-skip-forward-fill"></i></button>
+    </div>
+
+    <!-- Progress -->
+    <div class="flex-grow-1 mx-md-3 w-100">
+      <div class="d-flex align-items-center">
+        <small id="currentTime" class="me-2">0:00</small>
+        <input id="progressBar" type="range" class="form-range" min="0" max="100" value="0" style="flex-grow: 1;">
+        <small id="durationTime" class="ms-2">0:00</small>
+      </div>
+    </div>
+
+    <!-- Volume -->
+    <div class="d-flex align-items-center">
+      <i class="bi bi-volume-up me-2"></i>
+      <input id="volumeSlider" type="range" class="form-range" min="0" max="100" value="70" style="width: 100px;">
+      <small id="volumeValue" class="ms-2">70%</small>
+    </div>
+
+  </div>
+</footer>
+
+<!-- Hidden Audio Element -->
+<audio id="audioPlayer"></audio>
+
+<!-- Script -->
+<script>
+  const audio = document.getElementById('audioPlayer');
+  const playBtn = document.getElementById('playBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const progressBar = document.getElementById('progressBar');
+  const volumeSlider = document.getElementById('volumeSlider');
+  const volumeValue = document.getElementById('volumeValue');
+  const songButtons = document.querySelectorAll('.play-track');
+  const currentTimeEl = document.getElementById('currentTime');
+  const durationTimeEl = document.getElementById('durationTime');
+
+  const playlist = [
+    { title: "THE NIGHTS", artist: "Avicii", src:"/music/The_Nights.mp3" },
+    { title: "MOCKINGBIRDS", artist: "Eminem", src: "/music/Mockingbird.mp3" },
+    { title: "NARUTO", artist: "theme", src: "/music/naruto.mp3" },
+  ];
+
+  let currentIndex = 0;
+  let isPlaying = false;
+
+  function loadSong(index) {
+    const song = playlist[index];
+    audio.src = song.src;
+    currentIndex = index;
+  }
+
+  function playSong() {
+    audio.play();
+    isPlaying = true;
+    playBtn.innerHTML = `<i class="bi bi-pause-fill"></i>`;
+  }
+
+  function pauseSong() {
+    audio.pause();
+    isPlaying = false;
+    playBtn.innerHTML = `<i class="bi bi-play-fill"></i>`;
+  }
+
+  playBtn.addEventListener('click', () => {
+    if (isPlaying) pauseSong();
+    else playSong();
+  });
+
+  songButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const index = parseInt(btn.getAttribute('data-index'));
+      loadSong(index);
+      playSong();
+    });
+  });
+
+  nextBtn.addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) % playlist.length;
+    loadSong(currentIndex);
+    playSong();
+  });
+
+  prevBtn.addEventListener('click', () => {
+    currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
+    loadSong(currentIndex);
+    playSong();
+  });
+
+  function formatTime(seconds) {
+    const min = Math.floor(seconds / 60) || 0;
+    const sec = Math.floor(seconds % 60) || 0;
+    return `${min}:${sec < 10 ? '0' + sec : sec}`;
+  }
+
+  audio.addEventListener('timeupdate', () => {
+    if (!isNaN(audio.duration)) {
+      const percent = (audio.currentTime / audio.duration) * 100;
+      progressBar.value = percent;
+      currentTimeEl.textContent = formatTime(audio.currentTime);
+      durationTimeEl.textContent = formatTime(audio.duration);
+    }
+  });
+
+  progressBar.addEventListener('input', () => {
+    audio.currentTime = (progressBar.value / 100) * audio.duration;
+  });
+
+  volumeSlider.addEventListener('input', () => {
+    audio.volume = volumeSlider.value / 100;
+    volumeValue.textContent = `${volumeSlider.value}%`;
+  });
+
+  // Init
+  loadSong(currentIndex);
+  audio.volume = 0.7;
+  volumeValue.textContent = "70%";
+</script>
+
+</body>
+</html>
